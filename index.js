@@ -25,10 +25,19 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    //  DAta collections
+
     const menuCollection = client.db("khanapinaDB").collection("menu");
+    const reviewCollection = client.db("khanapinaDB").collection("reviews");
+
+    // READ/get operations
 
     app.get("/api/v1/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/api/v1/reviews", async (req, res) => {
+      const result = await reviewCollection.find().toArray();
       res.send(result);
     });
 
