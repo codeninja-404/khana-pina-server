@@ -29,15 +29,28 @@ async function run() {
 
     const menuCollection = client.db("khanapinaDB").collection("menu");
     const reviewCollection = client.db("khanapinaDB").collection("reviews");
+    const cartCollection = client.db("khanapinaDB").collection("carts");
 
     // READ/get operations
+    // get menu
 
     app.get("/api/v1/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
     });
+
+    // get reviews
     app.get("/api/v1/reviews", async (req, res) => {
       const result = await reviewCollection.find().toArray();
+      res.send(result);
+    });
+
+    // post operation
+    // carts collection
+
+    app.post("/carts", async (req, res) => {
+      const cartItem = req.body;
+      const result = await cartCollection.insertOne(cartItem);
       res.send(result);
     });
 
