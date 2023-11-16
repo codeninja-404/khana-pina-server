@@ -1,12 +1,17 @@
 const express = require("express");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const uri = `${process.env.DB_URI}`;
@@ -45,12 +50,33 @@ async function run() {
       res.send(result);
     });
 
-    // post operation
     // carts collection
 
-    app.post("/carts", async (req, res) => {
+    //  load/get specific users cart
+
+    app.get("/api/v1/carts", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        email: email,
+      };
+      const result = await cartCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    //post cart
+
+    app.post("/api/v1/carts", async (req, res) => {
       const cartItem = req.body;
+
       const result = await cartCollection.insertOne(cartItem);
+      res.send(result);
+    });
+
+    // delete cart items
+    app.delete("/api/v1/carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
       res.send(result);
     });
 
