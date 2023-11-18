@@ -32,9 +32,48 @@ async function run() {
 
     //  DAta collections
 
+    const userCollection = client.db("khanapinaDB").collection("users");
     const menuCollection = client.db("khanapinaDB").collection("menu");
     const reviewCollection = client.db("khanapinaDB").collection("reviews");
     const cartCollection = client.db("khanapinaDB").collection("carts");
+
+    // users related api
+    app.get("/api/v1/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/api/v1/users", async (req, res) => {
+      const user = req.body;
+      // insert email if user doesnot exiest
+      const query = { email: user.email };
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: "User already exiests.", insertedId: null });
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    // patch user to admin
+    app.patch("/api/v1/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+    //  delete user
+    app.delete("/api/v1/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // READ/get operations
     // get menu
