@@ -10,7 +10,6 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 app.use(
   cors({
     origin: "http://localhost:5173",
-    credentials: true,
   })
 );
 app.use(express.json());
@@ -138,6 +137,12 @@ async function run() {
 
     app.get("/api/v1/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
+      res.send(result);
+    });
+    //  post menu
+    app.post("/api/v1/menu", async (req, res) => {
+      const item = req.body;
+      const result = await menuCollection.insertOne(item);
       res.send(result);
     });
 
